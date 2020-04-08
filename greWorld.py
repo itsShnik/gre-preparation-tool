@@ -80,12 +80,43 @@ def displayAllLists():
         print("-----------------------------------")
         print()
 
-def updateVocab():
+def scrapeWordMeaning(word):
+    print(word)
+    url = 'https://www.vocabulary.com/dictionary/' + str(word)
     
+    # get the html content using requests
+    try:
+        r = requests.get(url)
+    except:
+        return
+
+    # parse the content
+    soup = BeautifulSoup(r.content, 'html5lib')
+
+    # create a dict which will be returned
+    return_dict = {}
+
+    try:
+        return_dict['short_explanation'] = soup.find("p", class_="short").text
+    except:
+        print("short explanation not found for ", word)
+    try:
+        return_dict['long_explanation'] = soup.find("p", class_="long").text
+    except:
+        print("long explanation not found for ", word)
+    try:
+        return_dict['synonyms'] = soup.find("dd").text
+    except:
+        print("synonyms not found for ", word)
+
+    return return_dict
+
+
+def updateVocab():
     for key in global_dict.keys():
         for word_dict in global_dict[key]:
             if word_dict["word"] not in vocab_dict:
-                vocab_dict[word_dict["word"]] = word_dict 
+                vocab_dict[word_dict["word"]] = scrapeWordMeaning(word_dict["word"])
 
     with open('vocabulary.json', 'w') as f:
         json.dump(vocab_dict, f)
@@ -118,8 +149,6 @@ def searchInVocab():
 
 def interactiveLearner(list_name = "Miscellaneous", num_words = 20):
     os.system('clear')
-
-
 
 def Learn():
     lists = global_dict.keys()
