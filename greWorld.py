@@ -1,7 +1,10 @@
+#!/usr/bin/env python3
+
 import requests
 from bs4 import BeautifulSoup
 import json
 import sys
+import os
 
 try:
     f = open("greWordList.json", 'r')
@@ -82,23 +85,12 @@ def updateVocab():
     for key in global_dict.keys():
         for word_dict in global_dict[key]:
             if word_dict["word"] not in vocab_dict:
-                vocab_dict[word_dict["word"]] = word_dict["definition"] 
+                vocab_dict[word_dict["word"]] = word_dict 
 
     with open('vocabulary.json', 'w') as f:
         json.dump(vocab_dict, f)
-        print("Local vocabulary successfully updated")
+        print("Local vocabulary successfully updated, current length is ", len(vocab_dict))
         f.close()
-
-def printMenu():
-    print("------------------------------------")
-    print("1. Display all the available lists")
-    print("2. Add a list from Vocabulary.com")
-    print("3. Learn from a list")
-    print("4. Take a test")
-    print("5. Update the local Vocabulary")
-    print("6. Search a word")
-    print("7. Exit")
-    print("------------------------------------")
 
 def addAList():
     print("\nEnter the url:")
@@ -124,12 +116,43 @@ def searchInVocab():
         else:
             print("word not found\n")
 
-def Learn():
-    print("function in build")
+def interactiveLearner(list_name = "Miscellaneous", num_words = 20):
+    os.system('clear')
 
+
+
+def Learn():
+    lists = global_dict.keys()
+    lists.append("Miscellaneous")
+
+    print("Which list do you want to prepare? Here are the options:\n")
+    for i in range(len(lists)):
+        print(str(i+1) + ". " + lists[i])
+    list_num = int(input())
+    
+    print("How many words do you want to learn today?")
+    num_words = int(input())
+
+    interactiveLearner(lists[list_num], num_words)
 
 def test():
     print("function in build")
+
+def vocabLength():
+    print(len(vocab_dict))
+
+def printMenu():
+    print("------------------------------------")
+    print("1. Display all the available lists")
+    print("2. Add a list from Vocabulary.com")
+    print("3. Learn from a list")
+    print("4. Take a test")
+    print("5. Update the local Vocabulary")
+    print("6. Search a word")
+    print("7. Vocab length")
+    print("8. Exit")
+    print("------------------------------------")
+
 
 def main():
     print("Welcome to the GRE World!")
@@ -155,6 +178,8 @@ def main():
         elif choice == 6:
             searchInVocab()
         elif choice == 7:
+            vocabLength()
+        elif choice == 8:
             sys.exit()
 
 if __name__=='__main__':
