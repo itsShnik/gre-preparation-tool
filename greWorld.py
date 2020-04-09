@@ -116,8 +116,9 @@ def scrapeWordMeaning(word):
 def updateVocab():
     for key in global_dict.keys():
         for word_dict in global_dict[key]:
-            if word_dict["word"] not in vocab_dict:
-                vocab_dict[word_dict["word"]] = scrapeWordMeaning(word_dict["word"])
+            if word_dict['word'] not in vocab_dict:
+                vocab_dict[word_dict['word']] = scrapeWordMeaning(word_dict['word'])
+                vocab_dict[word_dict['word']]['definition'] = word_dict['definition']
 
     with open('vocabulary.json', 'w') as f:
         json.dump(vocab_dict, f)
@@ -138,15 +139,12 @@ def addAList():
         f.close()
 
 def searchInVocab():
-    while(True):
-        word_to_search = str(input())
-        if(len(word_to_search) <= 1):
-            break
-        if word_to_search in vocab_dict.keys():
-            print(vocab_dict[word_to_search])
-            print()
-        else:
-            print("word not found\n")
+    word_to_search = str(input())
+    if word_to_search in vocab_dict.keys():
+        for key, value in vocab_dict[word_to_search].items():
+            print(key + ":\n\n" + value + "\n")
+    else:
+        print("word not found\n")
 
 def interactiveLearner(list_name = "Miscellaneous", num_words = 20):
     os.system('clear')
@@ -156,15 +154,23 @@ def interactiveLearner(list_name = "Miscellaneous", num_words = 20):
     randomly choose num_words from the mentioned list
     First show the complete description of the 
     '''
-    print("press enter for the next word or type 'exp' for explanation")
+    print("press enter for the next word or type 'exp' for explanation or enter a word anytime to search in the vocabulary")
 
     random_word_list = random.sample(global_dict[list_name], num_words)
 
     for word_dict in random_word_list:
         print("\n" + word_dict['word'] + '  ::  ' + word_dict['definition'])
-        while(str(input()).startswith('e')):
-            for key, value in vocab_dict[word_dict['word']].items():
-                print(key + ":\n\n" + value + "\n") 
+        while(True):
+            string = str(input())
+            if string == 'e':
+                for key, value in vocab_dict[word_dict['word']].items():
+                    print(key + ":\n\n" + value + "\n") 
+            elif string == 'x':
+                return
+            elif len(string) <= 1:
+                break
+            else:
+                searchInVocab(string)
 
 
 def Learn():
@@ -180,6 +186,8 @@ def Learn():
     num_words = int(input())
 
     interactiveLearner(lists[list_num], num_words)
+
+    return
 
 def test():
     print("function in build")
