@@ -2,6 +2,7 @@
 
 import requests
 from bs4 import BeautifulSoup
+import random
 import json
 import sys
 import os
@@ -150,9 +151,25 @@ def searchInVocab():
 def interactiveLearner(list_name = "Miscellaneous", num_words = 20):
     os.system('clear')
 
+    '''
+    Explanation of this learner:
+    randomly choose num_words from the mentioned list
+    First show the complete description of the 
+    '''
+    print("press enter for the next word or type 'exp' for explanation")
+
+    random_word_list = random.sample(global_dict[list_name], num_words)
+
+    for word_dict in random_word_list:
+        print("\n" + word_dict['word'] + '  ::  ' + word_dict['definition'])
+        while(str(input()).startswith('e')):
+            for key, value in vocab_dict[word_dict['word']].items():
+                print(key + ":\n\n" + value + "\n") 
+
+
 def Learn():
-    lists = global_dict.keys()
-    lists.append("Miscellaneous")
+    lists = list(global_dict.keys())
+    #lists.append("Miscellaneous")
 
     print("Which list do you want to prepare? Here are the options:\n")
     for i in range(len(lists)):
@@ -213,3 +230,4 @@ def main():
 
 if __name__=='__main__':
     main()
+
