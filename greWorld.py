@@ -138,8 +138,12 @@ def addAList():
         json.dump(global_dict, f)
         f.close()
 
-def searchInVocab():
-    word_to_search = str(input())
+def searchInVocab(string = None):
+    if string is None:
+        word_to_search = str(input())
+    else:
+        word_to_search = string
+
     if word_to_search in vocab_dict.keys():
         for key, value in vocab_dict[word_to_search].items():
             print(key + ":\n\n" + value + "\n")
@@ -157,21 +161,41 @@ def interactiveLearner(list_name = "Miscellaneous", num_words = 20):
     print("press enter for the next word or type 'exp' for explanation or enter a word anytime to search in the vocabulary")
 
     random_word_list = random.sample(global_dict[list_name], num_words)
+    
+    try:
+        f = open('tested_words.json', 'r')
+        tested_words = json.load(f)
+        f.close()
+    except:
+        tested_words = {}
 
     for word_dict in random_word_list:
         print("\n" + word_dict['word'] + '  ::  ' + word_dict['definition'])
+
+        # save the word in tested words
+        if word_dict['word'] not in tested_words:
+            tested_words[word_dict['word']] = word_dict['definition']
+
         while(True):
             string = str(input())
-            if string == 'e':
+            if string == 'e' or string == 'exp':
                 for key, value in vocab_dict[word_dict['word']].items():
                     print(key + ":\n\n" + value + "\n") 
-            elif string == 'x':
+            elif string == 'q':
+                if tested_words.__len__() > 1:
+                    f = open('tested_words.json', 'w')
+                    json.dump(tested_words, f)
+                    f.close()
                 return
             elif len(string) <= 1:
                 break
             else:
                 searchInVocab(string)
 
+    if tested_words.__len__() > 1:
+        f = open('tested_words.json', 'w')
+        json.dump(tested_words, f)
+        f.close()
 
 def Learn():
     lists = list(global_dict.keys())
