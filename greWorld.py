@@ -214,7 +214,91 @@ def Learn():
     return
 
 def test():
-    print("function in build")
+    # test from the file tested_words.json
+    os.system('clear')
+
+    print("How many words do you want to test?")
+    num = int(input())
+
+    # sample num tuples from the tested word dict
+    with open('tested_words.json', 'r') as f:
+        word_dict = json.load(f)
+        f.close()
+
+    # extract words and meanings in a list
+    words = list(word_dict.keys())
+    meanings = list(word_dict.values())
+
+    # verify that length of words in more than num
+    assert len(words) >= num, "Not enough words to test"
+
+    # sample n random words
+    to_test_words = random.sample(words, num)
+
+    # start the tester
+    correct = 0
+    incorrect = 0
+    ans = 0
+    ans_ind = 0
+    for i in range(num):
+        print("------------------------------------------------\n")
+        mode = random.randint(0,1)
+        if mode == 0:
+            print(to_test_words[i] + ": ")
+
+            # sample 4 random meanings
+            temp_meanings = random.sample(meanings, 4)
+            if word_dict[to_test_words[i]] not in temp_meanings:
+                temp_meanings.append(word_dict[to_test_words[i]])
+                random.shuffle(temp_meanings)
+
+            # print the meanings
+            count = 0
+            for meaning in temp_meanings:
+                count += 1
+                if meaning == word_dict[to_test_words[i]]:
+                    ans_ind = count
+                print("{}. {}".format(count, meaning))
+
+            # take input the answer
+            ans = int(input())
+
+        else:
+            print(word_dict[to_test_words[i]] + ": \n")
+
+            # sample 4 random words
+            temp_words = random.sample(words, 4)
+            if to_test_words[i] not in temp_words:
+                temp_words.append(to_test_words[i])
+                random.shuffle(temp_words)
+
+            # print the words
+            count = 0
+            for word in temp_words:
+                count += 1
+                if word == to_test_words[i]:
+                    ans_ind = count
+                print("{}. {}".format(count, word))
+
+            # take input the answer
+            ans = int(input())
+
+        # increase the scores
+        if ans == ans_ind:
+            correct += 1
+            print("\nCorrect Answer.")
+        else:
+            incorrect += 1
+            if mode == 0:
+                print("The correct answer is : {}\n".format(word_dict[to_test_words[i]]))
+            else:
+                print("The correct answer is : {}\n".format(to_test_words[i]))
+
+        print("----------------------------------------\n")
+
+        print("+ Score: {} / {}".format(correct, correct + incorrect))
+        print()
+
 
 def vocabLength():
     print(len(vocab_dict))
