@@ -213,12 +213,69 @@ def Learn():
 
     return
 
-def test():
+def meaning_to_word_test():
     # test from the file tested_words.json
     os.system('clear')
 
-    print("How many words do you want to test?")
+    # sample num tuples from the tested word dict
+    with open('tested_words.json', 'r') as f:
+        word_dict = json.load(f)
+        f.close()
+
+    # first find out the words
+    words = list(word_dict.keys())
+
+    # now we need to form a dictionay containing meaning: list of words that mean the same
+    print("How many words do you want to test from a total of {} words?".format(len(words)))
     num = int(input())
+
+    # sample n random words
+    to_test_words = random.sample(words, num)
+
+    # score and count
+    score = 0
+    count = 0
+
+    # store wrong words
+    wrongly_answered = {}
+
+    # form a dictionary of meanings: words
+    for word in to_test_words:
+        print("-------------------------------------")
+        print(word_dict[word])
+        print()
+        input_word = str(input())
+
+        if input_word == word:
+            print('Correct')
+            score += 1
+
+        else:
+            print('Incorrect, the correct answer is : {}, press `y` to mark it correct'.format(word))
+            response = str(input())
+            if response.lower() == 'y':
+                score += 1
+            else:
+                wrongly_answered[word] = word_dict[word]
+
+        count += 1
+
+        print("-------------------------------------\n")
+
+        print("-------------------------------------")
+        print("Score: {}/{}".format(score, count))
+        print("-------------------------------------\n")
+
+    # print the wrong answers
+    print("Remember all these\n")
+
+    for word, meaning in wrongly_answered.items():
+        print("{} :: {}".format(word, meaning))
+
+
+def mcq_test():
+    # test from the file tested_words.json
+    os.system('clear')
 
     # sample num tuples from the tested word dict
     with open('tested_words.json', 'r') as f:
@@ -228,6 +285,9 @@ def test():
     # extract words and meanings in a list
     words = list(word_dict.keys())
     meanings = list(word_dict.values())
+
+    print("How many words do you want to test from a total of {} words?".format(len(words)))
+    num = int(input())
 
     # verify that length of words in more than num
     assert len(words) >= num, "Not enough words to test"
@@ -261,7 +321,12 @@ def test():
                 print("{}. {}".format(count, meaning))
 
             # take input the answer
-            ans = int(input())
+            while True:
+                try:
+                    ans = int(input())
+                    break
+                except:
+                    continue
 
         else:
             print(word_dict[to_test_words[i]] + ": \n")
@@ -281,7 +346,12 @@ def test():
                 print("{}. {}".format(count, word))
 
             # take input the answer
-            ans = int(input())
+            while True:
+                try:
+                    ans = int(input())
+                    break
+                except:
+                    continue
 
         # increase the scores
         if ans == ans_ind:
@@ -334,7 +404,11 @@ def main():
         elif choice == 3:
             Learn()
         elif choice == 4:
-            test()
+            print("which test do you want to give?\n1. MCQ\n2. Meaning to Word")
+            if int(input()) == 1:
+                mcq_test()
+            else:
+                meaning_to_word_test()
         elif choice == 5:
             updateVocab()
         elif choice == 6:
