@@ -169,8 +169,13 @@ def interactiveLearner(list_name = "Miscellaneous", num_words = 20):
     except:
         tested_words = {}
 
+    # num words learnt
+    count = 0
+
     for word_dict in random_word_list:
-        print("\n" + word_dict['word'] + '  ::  ' + word_dict['definition'])
+        count += 1
+        print("--------------------------------------------------------")
+        print("\n" + str(count) + ". " + word_dict['word'] + '  ::  ' + word_dict['definition'])
 
         # save the word in tested words
         if word_dict['word'] not in tested_words:
@@ -191,6 +196,7 @@ def interactiveLearner(list_name = "Miscellaneous", num_words = 20):
                 break
             else:
                 searchInVocab(string)
+        print("-------------------------------------------------------\n")
 
     if tested_words.__len__() > 1:
         f = open('tested_words.json', 'w')
