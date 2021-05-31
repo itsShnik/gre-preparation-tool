@@ -203,6 +203,97 @@ def interactiveLearner(list_name = "Miscellaneous", num_words = 20):
         json.dump(tested_words, f)
         f.close()
 
+def flashcardleaner(list_name = "Miscellaneous", num_words = 20):
+    '''
+    Explanation of this flashcardleaner:
+    - randomly choose num_words from the mentioned list
+    - takes repetation of word in each deck
+    - takes randomly sampled one word from num_words
+    - first display word and wait for user input 
+    
+    breaks: when seen all word with all the repetation
+    '''
+
+    print('Number of repetition of each word in one deck')
+    repetition = int(input())
+    os.system('clear')
+    print("- press enter for the meaning followed by moving to next word \n- 'mean' or 'm' for meaning without moving to next word \n- type 'exp' for explanation \n- enter a word anytime to search in the vocabulary")
+    random_word_list = random.sample(global_dict[list_name], num_words)
+    
+    try:
+        f = open('tested_words_flash.json', 'r')
+        tested_words = json.load(f)
+        f.close()
+    except:
+        tested_words = {}
+
+    local_tested_words =[]
+    count =0    
+    while(count <= num_words*repetition):
+        word_dict = random.sample(random_word_list, 1)[0]
+
+        if "count" not in word_dict.keys():
+            word_dict['count'] = 1
+        while(word_dict['word'] in tested_words and word_dict['count'] >= 3):
+            word_dict = random.sample(random_word_list, 1)[0]
+        print("--------------------------------------------------------")
+        print("\n" + str(count) + ". " + word_dict['word'])
+        
+        # save the word in tested words
+        if word_dict['word'] not in tested_words:
+            tested_words[word_dict['word']] = word_dict['definition']
+        
+        try:
+            word_dict['count'] =  word_dict['count'] +1
+        except:
+            word_dict['count'] =  1
+
+        if word_dict['count'] > 3:
+            tested_words[word_dict['word']] = word_dict['definition']
+            local_tested_words.append(word_dict['word'])
+
+        mean_printed_already = False
+        while(True):     
+            string = str(input('Input:'))
+            if string == 'm' or string =='meaning' or string =='mean':
+                print( 'meaning :: ' + word_dict['definition'])
+                mean_printed_already =True 
+            elif string == 'e' or string == 'exp':
+                for key, value in vocab_dict[word_dict['word']].items():
+                    print(key + ":\n\n" + value + "\n") 
+            elif string == 'q':
+                if tested_words.__len__() > 1:
+                    f = open('tested_words_flash.json', 'w')
+                    json.dump(tested_words, f)
+                    f.close()
+                return
+            elif len(string) <= 1 or string == "next" or "n":
+                if mean_printed_already:
+                    break
+                print( 'meaning :: ' + word_dict['definition'])
+                break
+            else:
+                    searchInVocab(string)
+            if not mean_printed_already:
+                print("-------------------------------------------------------\n")
+        count =count +1
+    if tested_words.__len__() > 1:
+        f = open('tested_words_flash.json', 'w')
+        json.dump(tested_words, f)
+        f.close()
+
+def flashcard():
+    lists = list(global_dict.keys())
+    print("Which list do you want to use for flash card? Here are the options:\n")
+    for i in range(len(lists)):
+        print(str(i+1) + ". " + lists[i])
+    list_num = int(input())
+    
+    print("How many words do you want in your flashcard?")
+    num_words = int(input())
+
+    flashcardleaner(lists[list_num], num_words)
+
 def Learn():
     lists = list(global_dict.keys())
     #lists.append("Miscellaneous")
@@ -388,7 +479,8 @@ def printMenu():
     print("5. Update the local Vocabulary")
     print("6. Search a word")
     print("7. Vocab length")
-    print("8. Exit")
+    print("8. FlashCard")
+    print("9. Exit")
     print("------------------------------------")
 
 
@@ -422,6 +514,8 @@ def main():
         elif choice == 7:
             vocabLength()
         elif choice == 8:
+            flashcard()
+        elif choice == 9:
             sys.exit()
 
 if __name__=='__main__':
